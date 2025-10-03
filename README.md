@@ -22,21 +22,19 @@ Or set them as environment variables in your shell.
 
 ## Usage
 
-1. Place gauge images in the `inputs/` folder (e.g., `1.jpeg`, `2.png`).
-2. Create `outputs.csv` with ground truth data: `filename,min_value,max_value,reading_value,units`.
 3. Run the benchmark:
 
 ```bash
 gaugebench run
+# Or with model specified:
+gaugebench run --model your_model_id
 ```
-
-The CLI will prompt you to select the API (if both keys are set) and enter the model ID.
 
 ## Supported APIs
 
 - **OpenRouter**: Access to various vision models (e.g., `openai/gpt-4o`)
 - **OpenAI**: Direct access to OpenAI models (e.g., `gpt-4o`)
-
+{{ ... }}
 ## Website
 
 View the leaderboard at [https://ronneldavis.github.io/gaugebench/](https://ronneldavis.github.io/gaugebench/)

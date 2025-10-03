@@ -7,6 +7,7 @@ import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import axios from 'axios';
+import { OpenAI } from 'openai';
 import { parseFile } from '@fast-csv/parse';
 import { format as csvFormat } from '@fast-csv/format';
 import chalk from 'chalk';
@@ -22,7 +23,8 @@ program
 program
   .command('run')
   .description('Run the benchmark')
-  .action(async () => {
+  .option('--model <modelId>', 'Model ID to use (skips prompt)')
+  .action(async (options) => {
     // Display title
     console.log(boxen(chalk.bold.magenta('GaugeBench'), { padding: 1, margin: 1, borderStyle: 'double' }));
     console.log(chalk.blue('Visual Reasoning Benchmark for Analog Gauges\n'));
@@ -56,16 +58,21 @@ program
     }
 
     // Prompt for model ID
-    const modelAnswer = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'modelId',
-        message: chalk.cyan('Enter the model ID:'),
-        validate: (input) => input.length > 0 || chalk.red('Model ID is required'),
-      },
-    ]);
-
-    const modelId = modelAnswer.modelId;
+    let modelId: string;
+    if (options.model) {
+      modelId = options.model;
+      console.log(chalk.green(`✓ Using model: ${modelId}`));
+    } else {
+      const modelAnswer = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'modelId',
+          message: chalk.cyan('Enter the model ID:'),
+          validate: (input) => input.length > 0 || chalk.red('Model ID is required'),
+        },
+      ]);
+      modelId = modelAnswer.modelId;
+    }
 
     // Read ground truth
     const groundTruth: { [filename: string]: { min_value: number, max_value: number, reading_value: number, units: string } } = {};
@@ -110,8 +117,9 @@ program
     const responses = await Promise.all(promises);
 
     // Write individual CSV
+    const sanitizedModelId = modelId.replace(/\//g, '_');
     const csvStream = csvFormat({ headers: ['filename', 'min_value', 'max_value', 'reading_value', 'units'] });
-    csvStream.pipe(fs.createWriteStream(path.join(testOutputsDir, `${modelId}.csv`)));
+    csvStream.pipe(fs.createWriteStream(path.join(testOutputsDir, `${sanitizedModelId}.csv`)));
     for (const record of responses) {
       csvStream.write(record);
     }
@@ -152,7 +160,7 @@ program
     consolidatedStream.end();
     await new Promise((resolve) => consolidatedStream.on('finish', resolve));
 
-    console.log(`Benchmark completed. Results saved to ${modelId}.csv and consolidated.csv`);
+    console.log(`Benchmark completed. Results saved to ${sanitizedModelId}.csv and consolidated.csv`);
   });
 
 async function processImage(filename: string, modelId: string, inputsDir: string, apiType: string, openAiUrl: string): Promise<any> {
@@ -163,34 +171,53 @@ async function processImage(filename: string, modelId: string, inputsDir: string
 
   const prompt = `Analyze this gauge image. Return a JSON object with the following fields: min_value (number), max_value (number), reading_value (number), units (string). Only return the JSON, no other text.`;
 
-  let url: string, auth: string;
+  let content: string;
   if (apiType === 'openai') {
-    url = openAiUrl;
-    auth = `Bearer ${process.env.OPENAI_API_KEY}`;
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || 'dummy',
+      baseURL: openAiUrl,
+    });
+
+    const response = await client.chat.completions.create({
+      model: modelId,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: `data:${mimeType};base64,${base64Image}` } },
+          ],
+        },
+      ],
+    });
+
+    content = response.choices?.[0]?.message?.content || '';
+
+    console.log(`Raw response for ${filename}: ${JSON.stringify(content)}`);
   } else {
-    url = 'https://openrouter.ai/api/v1/chat/completions';
-    auth = `Bearer ${process.env.OPENROUTER_API_KEY}`;
+    // OpenRouter with axios
+    const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+      model: modelId,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: `data:${mimeType};base64,${base64Image}` } },
+          ],
+        },
+      ],
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    content = response.data.choices[0].message.content;
   }
 
-  const response = await axios.post(url, {
-    model: modelId,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: `data:${mimeType};base64,${base64Image}` } },
-        ],
-      },
-    ],
-  }, {
-    headers: {
-      'Authorization': auth,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  const content = response.data.choices[0].message.content;
+  console.log(`Raw response for ${filename}: ${JSON.stringify(content)}`);
   try {
     const parsed = JSON.parse(content);
     return {
