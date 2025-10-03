@@ -1,0 +1,4 @@
+filename,min_value,max_value,reading_value,units
+1.jpeg,0,100,25,psi
+2.png,0,200,150,bar
+3.jpeg,0,50,10,volts

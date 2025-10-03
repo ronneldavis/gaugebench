@@ -1,0 +1,39 @@
+{
+  "name": "@onvo-ai/gaugebench",
+  "version": "1.0.0",
+  "description": "GaugeBench: A benchmark for evaluating models on reading analog gauges",
+  "main": "dist/index.js",
+  "bin": {
+    "gaugebench": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronneldavis/gaugebench.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ronneldavis/gaugebench/issues"
+  },
+  "homepage": "https://github.com/ronneldavis/gaugebench#readme",
+  "dependencies": {
+    "@fast-csv/format": "^5.0.5",
+    "@fast-csv/parse": "^5.0.5",
+    "@types/node": "^24.6.2",
+    "axios": "^1.12.2",
+    "commander": "^14.0.1",
+    "fs-extra": "^11.3.2",
+    "inquirer": "^12.9.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
+  }
+}
