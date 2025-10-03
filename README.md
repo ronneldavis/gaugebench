@@ -10,11 +10,15 @@ npm install -g @onvo-ai/gaugebench
 
 ## Environment Variables
 
-Set one or both of the following API keys:
+Create a `.env` file in the project root with one or both of the following API keys:
 
-- `OPENROUTER_API_KEY`: For accessing models via OpenRouter
-- `OPENAI_API_KEY`: For accessing OpenAI models directly
-- `OPENAI_API_URL`: (Optional) Custom OpenAI API URL, defaults to `https://api.openai.com/v1/chat/completions`
+```env
+OPENROUTER_API_KEY=your_openrouter_key_here
+OPENAI_API_KEY=your_openai_key_here
+OPENAI_API_URL=https://api.openai.com/v1/chat/completions  # Optional
+```
+
+Or set them as environment variables in your shell.
 
 ## Usage
 

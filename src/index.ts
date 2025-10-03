@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
+
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
