@@ -429,39 +429,10 @@
             <h2>Leaderboard</h2>
             <p class="lead">See how leading multimodal models perform on GaugeBench. Scores reflect exact-match accuracy
                 on gauge reading tasks.</p>
-            <div class="leaderboard-grid">
-                <div class="card">
-                    <table id="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Model</th>
-                                <th>Creator</th>
-                                <th>Accuracy</th>
-                                <th>Evaluated</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5">Loading benchmark results…</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="leaderboard-meta">
-                    <div class="summary-card">
-                        <h3>Results summary</h3>
-                        <p id="result-summary">
-                            We are fetching the latest benchmark results. This summary will update automatically when
-                            the leaderboard loads.
-                        </p>
-                    </div>
-                    <div class="summary-card">
-                        <h3>Units distribution</h3>
-                        <canvas id="units-chart" width="320" height="320" role="img"
-                            aria-label="Gauge units distribution"></canvas>
-                    </div>
-                </div>
+            <div style="width: 100%; height: 800px;">
+                <iframe
+                    src="https://embed.onvo.ai/dashboards/047401ea-a937-4561-b38f-e3fdb155788f?token=eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFwcF9tZXRhZGF0YSI6eyJkYXNoYm9hcmRzIjpbIjA0NzQwMWVhLWE5MzctNDU2MS1iMzhmLWUzZmRiMTU1Nzg4ZiJdLCJwYXJlbnRfdGVhbSI6IjM1N2MyODFjLTQzNDctNDc3OC1hNTc1LTZhYWJlNGM4MzFiYyJ9LCJzdWIiOiIwMjVhZDRjNS1hNDNkLTQ4NDYtYTJhYS05NWU0ODk5MWZkMGMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiaWF0IjoxNzU5NTY5MjU5fQ.b3IiIvXU39um32poHjITeKrHPFYAxTDxq5lO1pWpKNw"
+                    frameborder="0" width="100%" height="100%"></iframe>
             </div>
         </section>
 
