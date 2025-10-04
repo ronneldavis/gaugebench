@@ -5,7 +5,7 @@ GaugeBench is a visual reasoning benchmark that evaluates whether AI models can 
 ## Installation
 
 ```bash
-npm install -g @onvo-ai/gaugebench
+npm install -g gaugebench
 ```
 
 ## Environment Variables
@@ -22,7 +22,7 @@ Or set them as environment variables in your shell.
 
 ## Usage
 
-3. Run the benchmark:
+To run the benchmark:
 
 ```bash
 gaugebench run
@@ -34,14 +34,15 @@ gaugebench run --model your_model_id
 
 - **OpenRouter**: Access to various vision models (e.g., `openai/gpt-4o`)
 - **OpenAI**: Direct access to OpenAI models (e.g., `gpt-4o`)
-{{ ... }}
+  {{ ... }}
+
 ## Website
 
-View the leaderboard at [https://ronneldavis.github.io/gaugebench/](https://ronneldavis.github.io/gaugebench/)
+View the leaderboard at [https://gaugebench.com](https://gaugebench.com)
 
 ## Paper
 
-[Read the Paper](https://gaugebench.ai/GaugeBench.pdf) (placeholder)
+[Read the Paper](https://gaugebench.com/GaugeBench.pdf) (placeholder)
 
 ## Contributing
 

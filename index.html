@@ -1,71 +1,754 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GaugeBench - Visual Reasoning Benchmark</title>
+    <title>GaugeBench · Visual Reasoning Benchmark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { background: #f8f9fa; padding: 20px; text-align: center; }
-        nav { text-align: center; margin: 20px 0; }
-        nav a { margin: 0 15px; text-decoration: none; color: #007bff; }
-        section { padding: 20px; max-width: 800px; margin: auto; }
-        h1 { color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 10px 0; }
-        a { color: #007bff; }
+        :root {
+            color-scheme: light;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #f8f9fb;
+            color: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f8f9fb;
+            color: #111827;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        header {
+            padding: 24px 0 48px;
+            background: #fdfdfd;
+            border-bottom: 1px solid #f1f3f5;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 28px;
+            margin: 0;
+            padding: 0;
+            font-weight: 500;
+        }
+
+        nav a {
+            color: #4b5563;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            color: #111827;
+        }
+
+        main {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 32px 120px;
+        }
+
+        .hero {
+            margin-top: 56px;
+            background: linear-gradient(180deg, #ffffff 0%, #f4f7fb 100%);
+            border-radius: 28px;
+            padding: 48px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.04);
+            text-align: left;
+        }
+
+        .hero h1 {
+            margin: 0 0 12px;
+            font-size: clamp(32px, 4vw, 44px);
+            letter-spacing: -0.03em;
+        }
+
+        .hero p {
+            margin: 0 0 24px;
+            max-width: 620px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .button.primary {
+            background: #111827;
+            color: #ffffff;
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+        }
+
+        .button.secondary {
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+        }
+
+        .stat-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card strong {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        section {
+            margin-top: 72px;
+        }
+
+        section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        section p.lead {
+            color: #4b5563;
+            max-width: 640px;
+            line-height: 1.7;
+            margin-bottom: 36px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        thead {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 14px;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #fcfdff;
+        }
+
+        tbody tr:hover {
+            background: #f5f7fb;
+        }
+
+        .leaderboard-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: 2fr 1fr;
+            align-items: stretch;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+            height: 100%;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 12px;
+            font-size: 20px;
+        }
+
+        .summary-card p {
+            color: #4b5563;
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .insights-grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            align-items: stretch;
+        }
+
+        .dataset-grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .dataset-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        .dataset-card img {
+            width: 100%;
+            border-radius: 16px;
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .dataset-card h4 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .dataset-card p {
+            margin: 0;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .cta {
+            margin-top: 60px;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 55%), #111827;
+            color: #ffffff;
+            border-radius: 28px;
+            padding: 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .cta h3 {
+            margin: 0 0 12px;
+            font-size: 24px;
+        }
+
+        .cta p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.84);
+            line-height: 1.6;
+        }
+
+        footer {
+            background: #0b101d;
+            color: rgba(255, 255, 255, 0.78);
+            padding: 48px 32px;
+            margin-top: 96px;
+        }
+
+        .footer-content {
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .footer-content small {
+            color: rgba(255, 255, 255, 0.64);
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                padding: 36px;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                position: static;
+            }
+
+            nav ul {
+                gap: 18px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                padding: 0 20px 80px;
+            }
+
+            .hero {
+                padding: 28px;
+            }
+
+            .cta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-container {
+                padding: 0 20px;
+            }
+        }
     </style>
 </head>
+
 <body>
     <header>
-        <h1>GaugeBench</h1>
-        <p>GaugeBench evaluates whether models can read analog gauges - a task that is trivial for humans, but current frontier models struggle with.</p>
-        <p><a href="https://gaugebench.ai/GaugeBench.pdf">Read the Paper</a></p>
+        <div class="nav-container">
+            <a class="logo" href="#top">GaugeBench</a>
+            <nav>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#leaderboard">Leaderboard</a></li>
+                    <li><a href="#dataset">Dataset</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-    <nav>
-        <a href="#overview">Overview</a>
-        <a href="#leaderboard">Leaderboard</a>
-        <a href="#dataset">Dataset</a>
-        <a href="#contact">Contact</a>
-    </nav>
-    <section id="overview">
-        <h2>Overview</h2>
-        <p>Visual Reasoning Benchmark for analog gauge reading.</p>
-    </section>
-    <section id="leaderboard">
-        <h2>Leaderboard</h2>
-        <ul id="leaderboard-list">
-            <li><a href="https://qwen.ai/research">Qwen 3-VL 235B Instruct</a></li>
-            <li><a href="https://openai.com/gpt-5/">GPT-5 Chat</a></li>
-            <!-- Add more as benchmark runs -->
-        </ul>
-    </section>
-    <section id="dataset">
-        <h2>Dataset</h2>
-        <p>Sample gauges used in the benchmark.</p>
-        <!-- Add sample images -->
-    </section>
-    <section id="contact">
-        <h2>Contact</h2>
-        <p>Reach out with questions or suggestions.</p>
-    </section>
+
+    <main id="top">
+        <section id="overview" class="hero">
+            <h1>Visual reasoning benchmark for reading analog gauges</h1>
+            <p>
+                GaugeBench evaluates whether multimodal models can accurately interpret real-world gauges under
+                challenging visual
+                conditions. We provide curated analog gauge images, scoring scripts, and a transparent leaderboard to
+                track frontier
+                model progress over time.
+            </p>
+            <div class="hero-actions">
+                <a class="button primary" href="https://gaugebench.ai/GaugeBench.pdf" target="_blank"
+                    rel="noopener">Read the paper</a>
+                <a class="button secondary" href="https://github.com/gaugebench" target="_blank" rel="noopener">View the
+                    project</a>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span>Gauge IDs</span>
+                    <strong id="stat-gauges">—</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Bench Runs</span>
+                    <strong id="stat-runs">—</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Average Accuracy</span>
+                    <strong id="stat-avg">—</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Top Score</span>
+                    <strong id="stat-top">—</strong>
+                </div>
+            </div>
+        </section>
+
+        <section id="leaderboard">
+            <h2>Leaderboard</h2>
+            <p class="lead">See how leading multimodal models perform on GaugeBench. Scores reflect exact-match accuracy
+                on gauge reading tasks.</p>
+            <div class="leaderboard-grid">
+                <div class="card">
+                    <table id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Model</th>
+                                <th>Creator</th>
+                                <th>Accuracy</th>
+                                <th>Evaluated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5">Loading benchmark results…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="leaderboard-meta">
+                    <div class="summary-card">
+                        <h3>Results summary</h3>
+                        <p id="result-summary">
+                            We are fetching the latest benchmark results. This summary will update automatically when
+                            the leaderboard loads.
+                        </p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Units distribution</h3>
+                        <canvas id="units-chart" width="320" height="320" role="img"
+                            aria-label="Gauge units distribution"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dataset">
+            <h2>Dataset</h2>
+            <p class="lead">
+                GaugeBench covers consumer, industrial, and scientific gauges spanning psi, bar, kPa, and custom scales.
+                We emphasise
+                lighting variety, occlusions, and reflections to stress-test visual reasoning.
+            </p>
+            <div class="dataset-grid">
+                <div class="dataset-card">
+                    <img src="inputs/1.jpeg" alt="Analog gauge from GaugeBench dataset">
+                    <h4>Pressure Gauges</h4>
+                    <p>Classic dial-style gauges with varying needle positions, glare, and bezels sourced from real
+                        devices.</p>
+                </div>
+                <div class="dataset-card">
+                    <img src="inputs/2.jpeg" alt="Digital gauge from GaugeBench dataset">
+                    <h4>Industrial Panels</h4>
+                    <p>High range indicators with dual units and multi-needle layouts to probe parsing of dense
+                        readouts.</p>
+                </div>
+                <div class="dataset-card">
+                    <img src="inputs/3.jpeg" alt="Gauge with low-light conditions">
+                    <h4>Low-Light Scenarios</h4>
+                    <p>Dimly lit or partially obscured gauges challenging models to reason under visual noise.</p>
+                </div>
+                <div class="dataset-card">
+                    <img src="inputs/5.jpeg" alt="Gauge with colorful dial">
+                    <h4>Custom Scales</h4>
+                    <p>Non-linear and color-coded scales requiring reasoning beyond uniform tick spacing.</p>
+                </div>
+            </div>
+
+            <div class="insights-grid" style="margin-top: 32px;">
+                <div class="card">
+                    <h3>Questions we ask</h3>
+                    <ul>
+                        <li><strong>Exact readout:</strong> Does the model return the precise gauge value and units?
+                        </li>
+                        <li><strong>Range awareness:</strong> Are minimum and maximum dial ranges identified correctly?
+                        </li>
+                        <li><strong>Consistency:</strong> Can the model produce structured JSON suitable for automatic
+                            scoring?</li>
+                        <li><strong>Robustness:</strong> Do predictions remain stable under reflections, blur, and
+                            cropped images?</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Try it yourself</h3>
+                    <p>Download the dataset and evaluation script to benchmark your own multimodal model.</p>
+                    <div class="hero-actions" style="margin-top: 24px;">
+                        <a class="button primary" href="https://github.com/gaugebench/gaugebench" target="_blank"
+                            rel="noopener">Get the dataset</a>
+                        <a class="button secondary" href="https://gaugebench.ai" target="_blank" rel="noopener">Scoring
+                            guide</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="cta">
+            <div>
+                <h3>Partner with GaugeBench</h3>
+                <p>
+                    We welcome research collaborations and eval contributions. Reach out if you are integrating
+                    GaugeBench into internal eval
+                    suites or would like to feature your model results on the public leaderboard.
+                </p>
+            </div>
+            <div class="hero-actions">
+                <a class="button secondary" href="mailto:hello@gaugebench.ai">Contact the team</a>
+                <a class="button primary" href="https://gaugebench.ai/GaugeBench.pdf" target="_blank"
+                    rel="noopener">Benchmark overview</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <strong>GaugeBench</strong>
+            <div>Benchmarking visual reasoning on analog gauges.</div>
+            <small>© <span id="year"></span> Onvo AI.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"
+        integrity="sha384-Yhsq0wiYbW+ntbThJgicLQxsrPGdrn+UkH5J6qUKNbaihDerhYHzkSpdZoFqX3iE"
+        crossorigin="anonymous"></script>
     <script>
-        // Load leaderboard from CSV
-        fetch('test_outputs/test_outputs_consolidated.csv')
-            .then(response => response.text())
-            .then(data => {
-                const lines = data.split('\n').slice(1); // Skip header
-                const list = document.getElementById('leaderboard-list');
-                lines.forEach(line => {
-                    if (line.trim()) {
-                        const [modelId, creator, score] = line.split(',');
-                        const li = document.createElement('li');
-                        li.textContent = `${creator} ${modelId}: ${score}%`;
-                        list.appendChild(li);
-                    }
+        const leaderboardSources = [
+            'test_outputs/test_outputs_consolidated.csv',
+            'outputs.csv'
+        ];
+
+        const defaultLeaderboard = [
+            { model: 'Example-VL', model_id: 'example/vl', model_creator: 'ExampleLab', score: '72.4', evaluated_at: '—' },
+            { model: 'Baseline-MM', model_id: 'baseline/mm', model_creator: 'GaugeBench', score: '58.0', evaluated_at: '—' }
+        ];
+
+        const tableBody = document.querySelector('#leaderboard-table tbody');
+        const summaryEl = document.getElementById('result-summary');
+        const statGauges = document.getElementById('stat-gauges');
+        const statRuns = document.getElementById('stat-runs');
+        const statAvg = document.getElementById('stat-avg');
+        const statTop = document.getElementById('stat-top');
+        const currentYear = document.getElementById('year');
+        const unitsChartCanvas = document.getElementById('units-chart');
+
+        if (currentYear) {
+            currentYear.textContent = new Date().getFullYear();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLeaderboard();
+            loadDatasetOverview();
+        });
+
+        async function fetchCsv(source) {
+            const response = await fetch(source, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`Unable to load ${source}`);
+            }
+            return response.text();
+        }
+
+        function parseCsv(text) {
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length <= 1) return [];
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1)
+                .filter(Boolean)
+                .map((line) => {
+                    const values = line.split(',');
+                    return headers.reduce((acc, header, index) => {
+                        acc[header] = (values[index] || '').trim();
+                        return acc;
+                    }, {});
                 });
-            })
-            .catch(console.error);
+        }
+
+        function getScoreValue(record) {
+            const candidates = ['score', 'accuracy', 'reading_accuracy', 'overall_accuracy'];
+            for (const key of candidates) {
+                if (record[key] !== undefined && record[key] !== '') {
+                    const value = parseFloat(record[key]);
+                    if (!Number.isNaN(value)) return value;
+                }
+            }
+            return NaN;
+        }
+
+        async function loadLeaderboard() {
+            let records = [];
+
+            for (const source of leaderboardSources) {
+                try {
+                    const csvText = await fetchCsv(source);
+                    const parsed = parseCsv(csvText);
+                    if (parsed.length) {
+                        records = parsed;
+                        break;
+                    }
+                } catch (error) {
+                    console.warn(error.message);
+                }
+            }
+
+            if (!records.length) {
+                records = defaultLeaderboard;
+            }
+
+            records = records
+                .map((record) => ({
+                    model: record.model || record.model_name || record.model_id || 'Unknown Model',
+                    model_id: record.model_id || record.model || record.model_name || '—',
+                    model_creator: record.model_creator || record.creator || 'Unknown',
+                    score: getScoreValue(record),
+                    evaluated_at: record.evaluated_at || record.timestamp || '—'
+                }))
+                .map((record) => ({
+                    ...record,
+                    scoreLabel: Number.isNaN(record.score) ? '—' : `${record.score.toFixed(1)}%`
+                }))
+                .sort((a, b) => (Number.isNaN(b.score) ? -Infinity : b.score) - (Number.isNaN(a.score) ? -Infinity : a.score));
+
+            tableBody.innerHTML = '';
+
+            if (!records.length) {
+                tableBody.innerHTML = '<tr><td colspan="5">No benchmark runs available yet.</td></tr>';
+                statRuns.textContent = '0';
+                statAvg.textContent = '—';
+                statTop.textContent = '—';
+                summaryEl.textContent = 'Submit a run to see leaderboard insights.';
+                return;
+            }
+
+            let index = 1;
+            let totalScore = 0;
+            let countedScores = 0;
+            records.forEach((record) => {
+                if (!Number.isNaN(record.score)) {
+                    totalScore += record.score;
+                    countedScores += 1;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+          <td>${index}</td>
+          <td>${record.model}</td>
+          <td>${record.model_creator}</td>
+          <td>${record.scoreLabel}</td>
+          <td>${record.evaluated_at}</td>
+        `;
+                tableBody.appendChild(row);
+                index += 1;
+            });
+
+            const topScore = records.find((r) => !Number.isNaN(r.score));
+            const avgScore = countedScores ? (totalScore / countedScores) : NaN;
+
+            statRuns.textContent = String(records.length);
+            statAvg.textContent = countedScores ? `${avgScore.toFixed(1)}%` : '—';
+            statTop.textContent = topScore ? `${topScore.score.toFixed(1)}%` : '—';
+
+            if (topScore) {
+                summaryEl.textContent = `${topScore.model} by ${topScore.model_creator} currently leads GaugeBench with ${topScore.score.toFixed(1)}% accuracy.`;
+            } else {
+                summaryEl.textContent = 'Leaderboard scores will appear as soon as benchmark runs are submitted.';
+            }
+        }
+
+        async function loadDatasetOverview() {
+            try {
+                const csvText = await fetchCsv('outputs.csv');
+                const records = parseCsv(csvText);
+                const gaugeCount = records.length;
+                const unitsBuckets = new Map();
+
+                records.forEach((record) => {
+                    const key = record.units && record.units !== '' ? record.units : 'unspecified';
+                    const count = unitsBuckets.get(key) || 0;
+                    unitsBuckets.set(key, count + 1);
+                });
+
+                statGauges.textContent = String(gaugeCount || '—');
+
+                const labels = Array.from(unitsBuckets.keys());
+                const data = Array.from(unitsBuckets.values());
+
+                if (unitsChartCanvas && labels.length) {
+                    new Chart(unitsChartCanvas, {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Gauge count',
+                                data,
+                                backgroundColor: '#2563eb',
+                                borderRadius: 8,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { precision: 0 },
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => `${context.parsed.y} gauges`
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Unable to load dataset overview', error);
+                statGauges.textContent = '—';
+            }
+        }
     </script>
 </body>
+
 </html>

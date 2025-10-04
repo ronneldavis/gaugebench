@@ -1,5 +1,5 @@
 {
-  "name": "@onvo-ai/gaugebench",
+  "name": "gaugebench",
   "version": "1.0.0",
   "description": "GaugeBench: A benchmark for evaluating models on reading analog gauges",
   "main": "dist/index.js",
@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "consolidate": "npm run build && node dist/index.js consolidate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

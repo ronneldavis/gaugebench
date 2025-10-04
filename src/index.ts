@@ -8,8 +8,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import axios from 'axios';
 import { OpenAI } from 'openai';
-import { parseFile } from '@fast-csv/parse';
 import { format as csvFormat } from '@fast-csv/format';
+import { consolidateResults, loadGroundTruth, getModelCreator } from './consolidate.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 
@@ -75,28 +75,12 @@ program
     }
 
     // Read ground truth
-    const groundTruth: { [filename: string]: { min_value: number, max_value: number, reading_value: number, units: string } } = {};
     const outputsPath = path.join(process.cwd(), 'outputs.csv');
     if (!await fs.pathExists(outputsPath)) {
       console.error('outputs.csv not found in current directory');
       process.exit(1);
     }
-
-    const rows: any[] = [];
-    await new Promise((resolve, reject) => {
-      parseFile(outputsPath, { headers: true })
-        .on('data', (row: any) => rows.push(row))
-        .on('end', resolve)
-        .on('error', reject);
-    });
-    for (const row of rows) {
-      groundTruth[row.filename] = {
-        min_value: parseFloat(row.min_value),
-        max_value: parseFloat(row.max_value),
-        reading_value: parseFloat(row.reading_value),
-        units: row.units,
-      };
-    }
+    const groundTruth = await loadGroundTruth(outputsPath);
 
     // Get list of input images
     const inputsDir = path.join(process.cwd(), 'inputs');
@@ -134,33 +118,29 @@ program
         correct++;
       }
     });
-    const score = (correct / imageFiles.length) * 100;
+    const score = imageFiles.length ? (correct / imageFiles.length) * 100 : 0;
 
-    // Get model creator
-    const modelCreator = await getModelCreator(modelId, apiType);
+    // Get model creator and write metadata
+    const modelCreator = await fetchModelCreator(modelId, apiType);
+    const metaPath = path.join(testOutputsDir, `${sanitizedModelId}.meta.json`);
+    await fs.writeJson(metaPath, {
+      model_id: modelId,
+      sanitized_model_id: sanitizedModelId,
+      model_creator: modelCreator,
+      api_type: apiType,
+      score,
+      evaluated_at: new Date().toISOString(),
+    }, { spaces: 2 });
 
-    // Update consolidated CSV
-    const consolidatedPath = path.join(testOutputsDir, 'test_outputs_consolidated.csv');
-    let consolidatedRows: any[] = [];
-    if (await fs.pathExists(consolidatedPath)) {
-      await new Promise((resolve, reject) => {
-        parseFile(consolidatedPath, { headers: true })
-          .on('data', (row: any) => consolidatedRows.push(row))
-          .on('end', resolve)
-          .on('error', reject);
-      });
-    }
-    consolidatedRows.push({ model_id: modelId, model_creator: modelCreator, score });
+    console.log(`Benchmark completed. Results saved to ${sanitizedModelId}.csv.`);
+    console.log('Run `gaugebench consolidate` to refresh leaderboard aggregates.');
+  });
 
-    const consolidatedStream = csvFormat({ headers: ['model_id', 'model_creator', 'score'] });
-    consolidatedStream.pipe(fs.createWriteStream(consolidatedPath));
-    for (const record of consolidatedRows) {
-      consolidatedStream.write(record);
-    }
-    consolidatedStream.end();
-    await new Promise((resolve) => consolidatedStream.on('finish', resolve));
-
-    console.log(`Benchmark completed. Results saved to ${sanitizedModelId}.csv and consolidated.csv`);
+program
+  .command('consolidate')
+  .description('Recalculate scores for all model runs and rewrite the consolidated CSV')
+  .action(async () => {
+    await consolidateResults();
   });
 
 async function processImage(filename: string, modelId: string, inputsDir: string, apiType: string, openAiUrl: string): Promise<any> {
@@ -217,7 +197,6 @@ async function processImage(filename: string, modelId: string, inputsDir: string
     content = response.data.choices[0].message.content;
   }
 
-  console.log(`Raw response for ${filename}: ${JSON.stringify(content)}`);
   try {
     const parsed = JSON.parse(content);
     return {
@@ -233,7 +212,8 @@ async function processImage(filename: string, modelId: string, inputsDir: string
   }
 }
 
-async function getModelCreator(modelId: string, apiType: string): Promise<string> {
+
+async function fetchModelCreator(modelId: string, apiType: string): Promise<string> {
   if (apiType === 'openai') return 'OpenAI';
   try {
     const response = await axios.get('https://openrouter.ai/api/v1/models', {
